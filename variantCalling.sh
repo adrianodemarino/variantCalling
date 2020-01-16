@@ -8,6 +8,13 @@ idsample=m192244-19WES
 6. singularity exec -B /home/adriano ~/src/img/biotools.img sambamba markdup -t 8 -p --tmpdir scratch --overflow-list-size 500000 ${idsample}.raw.sorted.bam ${idsample}.bam
 7. singularity exec -B /home/adriano ~/src/img/biotools.img freebayes -f /home/adriano/Documents/data/genomes/hg38.p12.fa -g 2000  ${idsample}.bam | bgzip > ${idsample}.vcf.gz
 8. tabix -p vcf ${idsample}.vcf.gz 
-9. zcat ${idsample}.vcf.gz | singularity exec -B /home/adriano ~/src/img/biotools.img vcffilter -f "QUAL > 20" > ${idsample}.fb.filt.vcf | bgzip ${idsample}.fb.filt.vcf
-10. singularity exec -B /home/adriano ~/src/img/biotools.img vt normalize ${idsample}.fb.filt.vcf.gz -r /home/adriano/Documents/data/genomes/hg38.p12.fa -o  ${idsample}.fb.norm.vcf.gz
+
+9. zcat ${idsample}.vcf.gz | singularity exec -B /home/adriano ~/src/img/biotools.img vcffilter -f "QUAL > 20" > ${idsample}.fb.filt.vcf
+bgzip ${idsample}.fb.filt.vcf
+8. tabix -p vcf ${idsample}.fb.filt.vcf.gz
+
+10. singularity exec -B /home/adriano ~/src/img/biotools.img vt normalize -n ${idsample}.fb.filt.vcf.gz -r /home/adriano/Documents/data/genomes/hg38.p12.fa -o ${idsample}.fb.norm.vcf.gz 
+8. tabix -p vcf ${idsample}.fb.norm.vcf.gz
+
 11. singularity exec -B /home/adriano ~/src/img/biotools.img vt decompose_blocksub  ${idsample}.fb.norm.vcf.gz  -o ${idsample}.fb.norm.decompose.vcf.gz
+tabix -p vcf ${idsample}.fb.norm.decompose.vcf.gz
