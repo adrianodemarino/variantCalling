@@ -1,6 +1,6 @@
 #!/bin/bash
 #pipe for varinat calling
-genome=/opt/NGS/genomes/hg38.p12.fa
+genome=/opt/NGS/genomes/hg38.fa.gz
 tmpdir=/opt/NGS/scratch/
 biotools=/home/adriano/src/img/biotools.img
 mount_dir_singu=/opt/NGS/
@@ -18,7 +18,7 @@ for idsample in $(cat $sample_list);
 	#2. index it with: `bwa index -a bwtsw hg38.fa.gz`
 	#3. mapping
 	echo " mapping bwa "
-	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $inputdir/$idsample_R1 $inputdir/$idsample_R2 | singularity exec -B $mount_dir_singu $biotools samtools view -b - > $outdir/$idsample.raw.bam
+	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample" $genome $idsample_R1 $idsample_R2 | singularity exec -B $mount_dir_singu $biotools samtools view -b - > $outdir/$idsample.raw.bam
 	#4. View
 	#singularity exec -B $mount_dir_singu $biotools samtools view -h $outdir/$idsample.raw.bam | less -S
 	#5. 
