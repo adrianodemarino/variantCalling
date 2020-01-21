@@ -3,7 +3,7 @@
 genome=/opt/NGS/genomes/hg38.p12.fa
 tmpdir=/opt/NGS/scratch/
 biotools=/home/adriano/src/img/biotools.img
-mount_dir_singu=/home/adriano/
+mount_dir_singu=/opt/NGS/
 inputdir=/opt/NGS/data/memorial_hospital
 outdir=/opt/NGS/results/memorial_hospital
 sample_list=/opt/NGS/data/sample_list.txt
@@ -11,14 +11,14 @@ chr_list=/opt/NGS/data/chr_list.txt
 for idsample in $(cat $sample_list); 
 	
 	do 
-	idsample_R1=`ls *$idsample*_1*`
-	idsample_R2=`ls *$idsample*_2*`
+	idsample_R1=`ls $inputdir/*$idsample*_1*`
+	idsample_R2=`ls $inputdir/*$idsample*_2*`
 	echo Start analysis of sample $idsample_R1 $idsample_R2
 	#1. Dowload human hg38 genome
 	#2. index it with: `bwa index -a bwtsw hg38.fa.gz`
 	#3. mapping
 	echo " mapping bwa "
-	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $inputdir/$idsample_R1 $inputdir/$idsample_R2 | samtools view -b - > $outdir/$idsample.raw.bam
+	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $inputdir/$idsample_R1 $inputdir/$idsample_R2 | singularity exec -B $mount_dir_singu $biotools samtools view -b - > $outdir/$idsample.raw.bam
 	#4. View
 	#singularity exec -B $mount_dir_singu $biotools samtools view -h $outdir/$idsample.raw.bam | less -S
 	#5. 
@@ -43,6 +43,5 @@ for idsample in $(cat $sample_list);
 		echo " decompose "
 		singularity exec -B $mount_dir_singu $biotools vt decompose_blocksub  $outdir/${idsample}.chr$c.fb.norm.vcf.gz  -o $outdir/${idsample}.chr$c.fb.norm.decompose.vcf.gz
 		tabix -p vcf $outdir/${idsample}.chr$c.fb.norm.decompose.vcf.gz
-
-	;done
-
+		done
+	done
