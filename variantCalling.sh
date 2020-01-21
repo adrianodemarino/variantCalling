@@ -1,39 +1,40 @@
 #pipe for varinat calling
 #!/bin/bash
 genome=/opt/NGS/genomes/hg38.p12.fa
-tmpdir=/opt/NGS/scratch
+tmpdir=/opt/NGS/scratch/
 biotools=/home/adriano/src/img/biotools.img
-mount_dir_singu=/home/adriano
-for word in $(cat sample_list.txt); 
+mount_dir_singu=/home/adriano/
+inputdir=/opt/NGS/data/memorial_hospital
+outdir=/opt/NGS/results/memorial_hospital
+for idsample in $(cat sample_list.txt); 
 	
 	do 
-	idsample_R1=`ls *$word*_1*`
-	idsample_R2=`ls *$word*_2*`
+	idsample_R1=`ls *$idsample*_1*`
+	idsample_R2=`ls *$idsample*_2*`
 	echo Start analysis of sample $idsample_R1 $idsample_R2
 	#1. Dowload human hg38 genome
 	#2. index it with: `bwa index -a bwtsw hg38.fa.gz`
 	#3. mapping
-	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $idsample_R1 $idsample_R2 | samtools view -b - > $idsample.raw.bam
-	#4.
-	singularity exec -B $mount_dir_singu $biotools samtools view -h m192244-19WES.raw.bam | less -S
+	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $inputdir/$idsample_R1 $inputdir/$idsample_R2 | samtools view -b - > $outdir/$idsample.raw.bam
+	#4. View
+	#singularity exec -B $mount_dir_singu $biotools samtools view -h $outdir/$idsample.raw.bam | less -S
 	#5.
-	singularity exec -B $mount_dir_singu $biotools sambamba sort -t 10 -m 20G --tmpdir $tmpdir -o ${idsample}.raw.sorted.bam ${idsample}.raw.bam
+	singularity exec -B $mount_dir_singu $biotools sambamba sort -t 10 -m 25G --tmpdir $tmpdir -o $outdir/${idsample}.raw.sorted.bam $outdir/${idsample}.raw.bam
 	#6.
-	singularity exec -B $mount_dir_singu $biotools sambamba markdup -t 8 -p --tmpdir scratch --overflow-list-size 500000 ${idsample}.raw.sorted.bam ${idsample}.bam
+	singularity exec -B $mount_dir_singu $biotools sambamba markdup -t 8 -p --tmpdir $tmpdir --overflow-list-size 500000 $outdir/${idsample}.raw.sorted.bam $outdir/${idsample}.bam
 	#7.
-	singularity exec -B $mount_dir_singu $biotools freebayes -f $genome -g 2000  ${idsample}.bam | bgzip > ${idsample}.vcf.gz
-	#8.
-	tabix -p vcf ${idsample}.vcf.gz 
-	#9.
-	zcat ${idsample}.vcf.gz | singularity exec -B $mount_dir_singu $biotools vcffilter -f "QUAL > 20" > ${idsample}.fb.filt.vcf
-	bgzip ${idsample}.fb.filt.vcf
-	tabix -p vcf ${idsample}.fb.filt.vcf.gz
-	#10.
-	singularity exec -B $mount_dir_singu $biotools vt normalize -n ${idsample}.fb.filt.vcf.gz -r $genome -o ${idsample}.fb.norm.vcf.gz 
-	tabix -p vcf ${idsample}.fb.norm.vcf.gz
-	#11.
-	singularity exec -B $mount_dir_singu $biotools vt decompose_blocksub  ${idsample}.fb.norm.vcf.gz  -o ${idsample}.fb.norm.decompose.vcf.gz
-	tabix -p vcf ${idsample}.fb.norm.decompose.vcf.gz
-	
+	for c in $(cat chr_list.txt); do  
+		singularity exec -B $mount_dir_singu $biotools freebayes -f $genome -r chr$c -g 2000  $outdir/${idsample}.bam | bgzip > $outdir/${idsample}.chr$c.vcf.gz
+		tabix -p vcf $outdir/${idsample}.chr$c.vcf.gz
+		zcat $outdir/${idsample}.chr$c.vcf.gz | singularity exec -B $mount_dir_singu $biotools vcffilter -f "QUAL > 20" > $outdir/${idsample}.chr$c.fb.filt.vcf
+		bgzip $outdir/${idsample}.chr$c.fb.filt.vcf
+		tabix -p vcf $outdir/${idsample}.chr$c.fb.filt.vcf.gz
+		#10.
+		singularity exec -B $mount_dir_singu $biotools vt normalize -n $outdir/${idsample}.chr$c.fb.filt.vcf.gz -r $genome -o $outdir/${idsample}.chr$c.fb.norm.vcf.gz 
+		tabix -p vcf $outdir/${idsample}.chr$c.fb.norm.vcf.gz
+		#11.
+		singularity exec -B $mount_dir_singu $biotools vt decompose_blocksub  $outdir/${idsample}.chr$c.fb.norm.vcf.gz  -o $outdir/${idsample}.chr$c.fb.norm.decompose.vcf.gz
+		tabix -p vcf $outdir/${idsample}.chr$c.fb.norm.decompose.vcf.gz
+
 	;done
 
