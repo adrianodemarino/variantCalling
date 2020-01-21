@@ -1,11 +1,12 @@
-#pipe for varinat calling
 #!/bin/bash
+#pipe for varinat calling
 genome=/opt/NGS/genomes/hg38.p12.fa
 tmpdir=/opt/NGS/scratch/
 biotools=/home/adriano/src/img/biotools.img
 mount_dir_singu=/home/adriano/
 inputdir=/opt/NGS/data/memorial_hospital
 outdir=/opt/NGS/results/memorial_hospital
+
 for idsample in $(cat sample_list.txt); 
 	
 	do 
@@ -15,12 +16,15 @@ for idsample in $(cat sample_list.txt);
 	#1. Dowload human hg38 genome
 	#2. index it with: `bwa index -a bwtsw hg38.fa.gz`
 	#3. mapping
+	echo " mapping bwa "
 	bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample"  $inputdir/$idsample_R1 $inputdir/$idsample_R2 | samtools view -b - > $outdir/$idsample.raw.bam
 	#4. View
 	#singularity exec -B $mount_dir_singu $biotools samtools view -h $outdir/$idsample.raw.bam | less -S
-	#5.
+	#5. 
+	echo " sambamba sort "
 	singularity exec -B $mount_dir_singu $biotools sambamba sort -t 10 -m 25G --tmpdir $tmpdir -o $outdir/${idsample}.raw.sorted.bam $outdir/${idsample}.raw.bam
-	#6.
+	#6. remove duplicates
+	echo " sambamba remove duplicates "
 	singularity exec -B $mount_dir_singu $biotools sambamba markdup -t 8 -p --tmpdir $tmpdir --overflow-list-size 500000 $outdir/${idsample}.raw.sorted.bam $outdir/${idsample}.bam
 	#7.
 	for c in $(cat chr_list.txt); do  
