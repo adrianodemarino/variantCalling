@@ -36,4 +36,3 @@ for idsample in $(cat $sample_list); do
 		#7.
 	fi
 done
-

@@ -23,7 +23,7 @@ done
 
 echo "freebayes"
 
-FILE=$outdir/$idsample.chr$c.vcf.gz
+FILE=$outdir/$idsample/$idsample.chr$c.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
@@ -32,7 +32,7 @@ else
 fi
 
 echo "quality filter"
-FILE=$outdir/$idsample.chr$c.fb.filt.vcf
+FILE=$outdir/$idsample/$idsample.chr$c.fb.filt.vcf
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
@@ -42,7 +42,7 @@ else
 fi
 
 echo "normalize"
-FILE=$outdir/$idsample.chr$c.fb.norm.vcf.gz
+FILE=$outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
@@ -51,7 +51,7 @@ else
 fi
 
 echo "decompose"
-FILE=$outdir/$idsample.chr$c.fb.norm.decompose.vcf.gz
+FILE=$outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
