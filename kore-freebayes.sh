@@ -18,6 +18,7 @@ c) c=${OPTARG};; #chromosome
 esac
 done
 
+
 echo "freebayes"
 
 FILE=$outdir/${idsample}.chr$c.vcf.gz
