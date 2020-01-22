@@ -7,7 +7,7 @@ biotools=/home/adriano/src/img/biotools.img
 mount_dir_singu=/opt/NGS/
 inputdir=/opt/NGS/data/memorial_hospital
 outdir=/opt/NGS/results/memorial_hospital
-sample_list=/opt/NGS/data/sample_list.txt
+sample_list=/opt/NGS/data/priority_sample_list.txt
 chr_list=/opt/NGS/data/chr_list.txt
 
 for idsample in $(cat $sample_list); do
