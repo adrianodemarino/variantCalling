@@ -35,8 +35,7 @@ samples=( 182088
  191386
  192128
  192184
- 192477
- 192695)
+ 192477)
 
 for id in "${samples[@]}"; do
 	echo "sample ID: $id"
