@@ -1,7 +1,7 @@
 #!/bin/bash
-#launch Kore free-bayes in parallel
-sample_list=/opt/NGS/data/priority_sample_list.txt
-chr_list=/opt/NGS/data/chr_list.txt
+#send file to recas
+
+cd /media/adriano/TOSHIBA/memorial_exome_results/results/memorial_hospital
 
 samples=( 182088
  190116
@@ -38,9 +38,5 @@ samples=( 182088
  192477
  192695)
 
-for id in "${samples[@]}"; do
-	echo "sample ID: $id"
-	for c in $(cat $chr_list); do 
-		/home/$(whoami)/github/variantCalling/kore-freebayes.sh -i $id -c $c & 
-	done
-done
+for idsample in "${samples[@]}"; do 
+	scp -r $idsample/$idsample*chr*deco*.vcf.gz enza@frontend.recas.ba.infn.it:/lustre/home/enza/adriano/project/memorial_hospital/results/variantcalling ; done
