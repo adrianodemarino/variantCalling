@@ -29,7 +29,7 @@ if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
 	singularity exec -B $mount_dir_singu $biotools freebayes -f $genome2 -r chr$c -g 2000  $outdir/$idsample/$idsample.bam | bgzip > $outdir/$idsample/$idsample.chr$c.vcf.gz
-	tabix -p vcf $outdir/$idsample/$idsample.chr$c.vcf.gz
+	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.vcf.gz
 fi
 
 echo "quality filter"
@@ -39,7 +39,7 @@ if test -f "$FILE"; then
 else 
 	zcat $outdir/$idsample/$idsample.chr$c.vcf.gz | singularity exec -B $mount_dir_singu $biotools vcffilter -f "QUAL > 20" > $outdir/$idsample/$idsample.chr$c.fb.filt.vcf
 	bgzip $outdir/$idsample/$idsample.chr$c.fb.filt.vcf
-	tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz
+	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz
 fi
 
 echo "normalize"
@@ -48,7 +48,7 @@ if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
 	singularity exec -B $mount_dir_singu $biotools vt normalize -n $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz -r $genome2 -o $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz 
-	tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz
+	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz
 fi
 
 echo "decompose"
@@ -57,7 +57,7 @@ if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
 	singularity exec -B $mount_dir_singu $biotools vt decompose_blocksub  $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz  -o $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
-	tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
+	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
 fi
 
 
