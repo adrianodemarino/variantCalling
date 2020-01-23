@@ -30,10 +30,9 @@ for idsample in $(cat $sample_list); do
 		#5. 
 		echo "> sambamba sort "
 		singularity exec -B $mount_dir_singu $biotools sambamba sort -t 10 -m 25G --tmpdir $tmpdir -o $outdir/$idsample/${idsample}.raw.sorted.bam $outdir/$idsample/${idsample}.raw.bam
-		#6. remove duplicates
+		#6. mark duplicates
 		echo "> sambamba remove duplicates "
 		singularity exec -B $mount_dir_singu $biotools sambamba markdup -t 8 -p --tmpdir $tmpdir --overflow-list-size 500000 $outdir/$idsample/${idsample}.raw.sorted.bam $outdir/$idsample/${idsample}.bam
 		#7.
 	fi
 done
- 
