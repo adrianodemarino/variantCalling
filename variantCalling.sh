@@ -2,11 +2,11 @@
 #pipe for varinat calling
 genome=/opt/NGS/genomes/hg38.fa.gz
 genome2=/opt/NGS/genomes/hg38.p12.fa
-tmpdir=/opt/NGS/scratch/
+tmpdir=/media/adriano/TOSHIBA/memorial_exome_results/scratch
 biotools=/home/adriano/src/img/biotools.img
-mount_dir_singu=/opt/NGS/
+mount_dir_singu=/media/adriano/TOSHIBA/
 inputdir=/opt/NGS/data/memorial_hospital
-outdir=/opt/NGS/results/memorial_hospital
+outdir=/media/adriano/TOSHIBA/memorial_exome_results/results/memorial_hospital
 sample_list=/opt/NGS/data/priority_sample_list.txt
 chr_list=/opt/NGS/data/chr_list.txt
 
@@ -36,3 +36,4 @@ for idsample in $(cat $sample_list); do
 		#7.
 	fi
 done
+ 
