@@ -1,8 +1,8 @@
 #!/bin/bash
 #https://bioinformaticsworkbook.org/dataAnalysis/VariantCalling/freebayes-dnaseq-workflow.html
 #tutotial for variant calling
-genome=/opt/NGS/genomes/hg38.fa.gz
-genome2=/opt/NGS/genomes/hg38.p12.fa
+genome=/media/adriano/TOSHIBA/memorial_exome_results/genomes/hg38.fa.gz
+genome2=/media/adriano/TOSHIBA/memorial_exome_results/genomes/hg38.p12.fa
 tmpdir=/media/adriano/TOSHIBA/memorial_exome_results/scratch
 biotools=/home/adriano/src/img/biotools.img
 mount_dir_singu=/media/adriano/TOSHIBA/
