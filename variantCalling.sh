@@ -10,15 +10,15 @@ outdir=/media/adriano/TOSHIBA/memorial_exome_results/results/memorial_hospital
 sample_list=/opt/NGS/data/priority_sample_list.txt
 chr_list=/opt/NGS/data/chr_list.txt
 
-for idsample in "${pre_dev_arrest[@]}"; do
+for idsample in 192361 192824; do
     dir=$outdir/$idsample
     if [ -d "$dir" ]; then
         echo ">>> $dir exist"
         echo ">>> SKIP"
     else 
         mkdir $outdir/$idsample
-        idsample_R1=`ls $inputdir/*$idsample*R1*`
-        idsample_R2=`ls $inputdir/*$idsample*R2*`
+        idsample_R1=`ls $inputdir/*$idsample*_1*`
+        idsample_R2=`ls $inputdir/*$idsample*_2*`
         echo Start analysis of sample $idsample_R1 $idsample_R2
         #1. Dowload human hg38 genome
         #2. index it with: `bwa index -a bwtsw hg38.fa.gz`
