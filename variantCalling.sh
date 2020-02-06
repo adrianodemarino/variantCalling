@@ -24,7 +24,7 @@ for idsample in 192361 192824; do
         #2. index it with: `bwa index -a bwtsw hg38.fa.gz`
         #3. mapping
         echo "> mapping bwa "
-        bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample" $genome $idsample_R1 $idsample_R2 | singularity exec -B $mount_dir_singu $biotools samtools view -b - > $outdir/$idsample/$idsample.raw.bam
+        bwa mem -t 8 -R "@RG\tID:$idsample\tSM:$idsample" $genome $idsample_R1 $idsample_R2 |  samtools view -b - > $outdir/$idsample/$idsample.raw.bam
         #4. View
         #singularity exec -B $mount_dir_singu $biotools samtools view -h $outdir/$idsample/$idsample.raw.bam | less -S
         #5. 

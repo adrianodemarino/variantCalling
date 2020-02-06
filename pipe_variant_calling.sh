@@ -2,11 +2,12 @@
 
 ## Hard Code Params
 DIR='/scratch/cgsb/gencore/out/Gresham/2015-10-23_HK5NHBGXX/lib1-26/'
-REF='/scratch/work/cgsb/reference_genomes/Public/Fungi/Saccharomyces_cerevisiae/R64-1-1/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa'
-SNPEFF_DB='Saccharomyces_cerevisiae'
+REF1='/opt/NGS/genomes/hg38.fa.gz'
+REF2='/opt/NGS/genomes/hg38.12.fa'
+SNPEFF_DB='homo_sapiens'
 PL='illumina'
 PM='nextseq'
-EMAIL=${USER}@nyu.edu
+EMAIL=${USER}@gmail.com
 
 ## Or Set Params via Command Line
 #DIR=$1 #DIRECTORY WITH FASTQ FILES TO PROCESS
@@ -15,6 +16,10 @@ EMAIL=${USER}@nyu.edu
 #PL=$4  #EX: illumina
 #PM=$5  #EX: nextseq
 #EMAIL=$6 #EX: netID@nyu.edu
+
+## Machine settings
+threads=20
+
 
 
 ## Modules Used in this script
@@ -38,8 +43,7 @@ WD="$(pwd)"
 pre_process(){
 
 com="cd $FWD && \
-module load $BWA && \
-bwa mem -M -R '@RG\tID:$file\tLB:$file\tPL:$PL\tPM:$PM\tSM:$file' \
+bwa mem -t $threads -R "@RG\tID:$idsample\tSM:$idsample"
 $REF \
 $INPUT_1 $INPUT_2 \
 > ${ID}_aligned_reads.sam"
@@ -48,7 +52,7 @@ $(sbatch -J $ID.bwa -o $ID.bwa.out -e $ID.bwa.err --mail-user=$EMAIL --mail-type
 stringarray=($response)
 alignment=${stringarray[-1]}
 echo $alignment > $ID.log
-echo "ALIGNMENT: " $alignment
+echo "ALIGNMENT: " $alignment 
 echo "Alignment Submitted"
 
 com="cd $FWD && \ 
@@ -358,7 +362,7 @@ analyze_covariates(){
 com="cd $FWD && \
 module load $GATK && \
 module load $R && \
-java -jar $GATK_JAR \
+java -jar $GATK_JAR \/var/log/slurm-llnl/SlurmctldLogFile
 -T AnalyzeCovariates \
 -R $REF \
 -before ${ID}_recal_data.table \
