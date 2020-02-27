@@ -1,15 +1,14 @@
 #!/bin/bash
 #https://bioinformaticsworkbook.org/dataAnalysis/VariantCalling/freebayes-dnaseq-workflow.html
 #tutotial for variant calling
-genome=/media/adriano/TOSHIBA/memorial_exome_results/genomes/hg38.fa.gz
-genome2=/media/adriano/TOSHIBA/memorial_exome_results/genomes/hg38.p12.fa
-tmpdir=/media/adriano/TOSHIBA/memorial_exome_results/scratch
-biotools=/home/adriano/src/img/biotools.img
-mount_dir_singu=/media/adriano/TOSHIBA/
-inputdir=/opt/NGS/data/memorial_hospital
-outdir=/media/adriano/TOSHIBA/memorial_exome_results/results/memorial_hospital
-sample_list=/opt/NGS/data/priority_sample_list.txt
-chr_list=/opt/NGS/data/chr_list.txt
+genome=/data/resources/genomes/human/hg38.fa
+tmpdir=/scratch
+biotools=/data/resources/img/biotools.img
+cgt=/data/resources/img/CGT.img
+mount_dir_singu=/data
+outdir=/data/research/NGS/results/memorial_exome
+sample_list=/data/research/NGS/results/memorial_exome/missing_sample.list
+
 
 
 while getopts i:c: option
@@ -28,7 +27,7 @@ FILE=$outdir/$idsample/$idsample.chr$c.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
-	singularity exec -B $mount_dir_singu $biotools freebayes -f $genome2 -r chr$c -g 2000  $outdir/$idsample/$idsample.bam | bgzip > $outdir/$idsample/$idsample.chr$c.vcf.gz
+	freebayes -f $genome -r chr$c -g 2000  $outdir/$idsample/$idsample.bam | bgzip > $outdir/$idsample/$idsample.chr$c.vcf.gz && touch $idsample.chr$c_ok
 	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.vcf.gz
 fi
 
@@ -37,7 +36,7 @@ FILE=$outdir/$idsample/$idsample.chr$c.fb.filt.vcf
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
-	zcat $outdir/$idsample/$idsample.chr$c.vcf.gz | singularity exec -B $mount_dir_singu $biotools vcffilter -f "QUAL > 20" > $outdir/$idsample/$idsample.chr$c.fb.filt.vcf
+	zcat $outdir/$idsample/$idsample.chr$c.vcf.gz | vcffilter -f "QUAL > 20" > $outdir/$idsample/$idsample.chr$c.fb.filt.vcf
 	bgzip $outdir/$idsample/$idsample.chr$c.fb.filt.vcf
 	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz
 fi
@@ -47,7 +46,7 @@ FILE=$outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
-	singularity exec -B $mount_dir_singu $biotools vt normalize -n $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz -r $genome2 -o $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz 
+	vt normalize -n $outdir/$idsample/$idsample.chr$c.fb.filt.vcf.gz -r $genome -o $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz 
 	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz
 fi
 
@@ -56,7 +55,7 @@ FILE=$outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
 if test -f "$FILE"; then
 	echo ">>> $FILE exist"
 else 
-	singularity exec -B $mount_dir_singu $biotools vt decompose_blocksub  $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz  -o $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
+	vt decompose_blocksub  $outdir/$idsample/$idsample.chr$c.fb.norm.vcf.gz  -o $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
 	#tabix -p vcf $outdir/$idsample/$idsample.chr$c.fb.norm.decompose.vcf.gz
 fi
 
